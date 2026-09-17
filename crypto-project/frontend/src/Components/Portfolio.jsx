@@ -19,7 +19,20 @@ const Portfolio = () => {
     "dogecoin",
     "polkadot",
   ];
-  const userId = JSON.parse(localStorage.getItem("user")).id;
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  // Guard: if not logged in, show friendly message instead of crashing
+  if (!user) {
+    return (
+      <div className="p-6 text-center text-gray-600">
+        <p className="text-xl font-semibold mb-2">?? Please log in to view your portfolio.</p>
+        <p className="text-sm text-gray-400">Use the Login button in the navigation bar.</p>
+      </div>
+    );
+  }
+
+  const userId = user.id;
 
   useEffect(() => {
     fetchPrices();

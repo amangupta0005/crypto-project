@@ -58,18 +58,26 @@ export default function App() {
     };
   }, []);
 
+  const fetchCoins = async () => {
+    try {
+      const { data } = await API.get("/market/coins");
+      setCoins(data.slice(0, 50));
+    } catch (error) {
+      console.error("Error fetching coins:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchLeaderboard = async () => {
-      const { data } = await API.get("/leaderboard");
-      setLeaderboard(data);
+      try {
+        const { data } = await API.get("/leaderboard");
+        setLeaderboard(data);
+      } catch (error) {
+        console.error("Error fetching leaderboard:", error);
+      }
     };
     fetchLeaderboard();
   }, []);
-
-  const fetchCoins = async () => {
-    const { data } = await API.get("/market/coins");
-    setCoins(data.slice(0, 50));
-  };
 
   const fetchPriceHistory = async (coin) => {
     try {
@@ -285,12 +293,12 @@ export default function App() {
       {activePage === "news" && renderNewsPage()}
       {activePage === "login" && (
         <div className="bg-white p-6 rounded-xl shadow-lg">
-          <Login />
+      <Login setActivePage={setActivePage} />
         </div>
       )}
       {activePage === "register" && (
         <div className="bg-white p-6 rounded-xl shadow-lg">
-          <Register />
+      <Register setActivePage={setActivePage} />
         </div>
       )}
     </div>

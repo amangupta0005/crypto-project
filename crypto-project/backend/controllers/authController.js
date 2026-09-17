@@ -5,8 +5,6 @@ import jwt from "jsonwebtoken";
 // REGISTER CONTROLLER
 export const register = async (req, res) => {
   const { username, email, password } = req.body;
-  console.log("Received registration data:", req.body);
-  console.log("Register attempt with email:", email, "and username:", username);
   try {
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -17,15 +15,13 @@ export const register = async (req, res) => {
     // Hash password
     const salt = await bcrypt.genSalt(7);
     const hashedPassword = await bcrypt.hash(password, salt);
-    console.log("Hashed password:", hashedPassword);
+
     // Create new user
     const newUser = await User.create({
       username,
       email,
       password: hashedPassword,
     });
-
-    console.log("New user created:", newUser);
 
     // Generate JWT
     const token = jwt.sign(
@@ -45,7 +41,7 @@ export const register = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Registration error:", err);
+    console.error("Registration error:", err.message);
     // Handle Mongoose validation and duplicate key errors
     if (err.code === 11000) {
       const field = Object.keys(err.keyPattern)[0];
@@ -64,15 +60,11 @@ export const register = async (req, res) => {
 // LOGIN CONTROLLER
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  console.log("Login attempt with email:", email, password);
   try {
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ msg: "Invalid email or password" });
-    }
-    else {
-      console.log("User found:", user);
     }
 
     // Validate password
@@ -81,11 +73,11 @@ export const login = async (req, res) => {
       return res.status(400).json({ msg: "Invalid email or password" });
     }
 
-    // Generate JWT
+    // Generate JWT — 7d to match register token duration
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET || "fallback_secret",
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
 
     // Send response
@@ -99,7 +91,7 @@ export const login = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Login error:", err);
+    console.error("Login error:", err.message);
     if (err.code === 11000) {
       const field = Object.keys(err.keyPattern)[0];
       return res.status(400).json({ msg: `${field} already exists` });
@@ -113,3 +105,4 @@ export const login = async (req, res) => {
     res.status(500).json({ msg: "Server error", error: err.message });
   }
 };
+

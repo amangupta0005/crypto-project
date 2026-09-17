@@ -20,7 +20,7 @@ router.post("/", async (req, res) => {
 // Get messages for a room
 router.get("/:room", async (req, res) => {
     try {
-        const messages = await Chat.find({ room: req.params.room }).sort({ timestamp: -1 }).populate("user", "username"); // Populate user field with username
+        const messages = await Chat.find({ room: req.params.room }).sort({ timestamp: 1 }).populate("user", "username");
         res.json(messages);
     } catch (err) {
         res.status(500).json({ error: "Failed to fetch messages" });

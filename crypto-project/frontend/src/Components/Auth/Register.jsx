@@ -2,22 +2,21 @@
 import { useState } from "react";
 import API from "../../Api";
 
-export default function Register() {
+export default function Register({ setActivePage }) {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [msg, setMsg] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Submitting registration form:", form);
       const res = await API.post("/auth/register", form);
-      console.log("Registration successful:", res.data);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
-      setMsg("✅ Registered successfully!");
+      setMsg("? Registered successfully!");
+      setTimeout(() => window.location.reload(), 1000);
     } catch (err) {
       console.error("Registration error:", err);
-      setMsg(err.response?.data?.msg || err.response?.data?.message || "❌ Error occurred");
+      setMsg(err.response?.data?.msg || err.response?.data?.message || "? Error occurred");
     }
   };
 
@@ -27,44 +26,38 @@ export default function Register() {
         onSubmit={handleSubmit}
         className="bg-white/10 backdrop-blur-xl border border-gray-700 p-8 rounded-2xl shadow-2xl w-full max-w-md"
       >
-        {/* Heading */}
         <h2 className="text-3xl font-extrabold text-center text-white mb-6 tracking-wide">
           Create Account
         </h2>
 
-        {/* Username */}
         <input
           type="text"
-          placeholder="👤 Username"
+          placeholder="?? Username"
           className="w-full mb-4 px-4 py-3 bg-gray-900/70 text-white border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={form.username}
           onChange={(e) => setForm({ ...form, username: e.target.value })}
         />
 
-        {/* Email */}
         <input
           type="email"
-          placeholder="📧 Email"
+          placeholder="?? Email"
           className="w-full mb-4 px-4 py-3 bg-gray-900/70 text-white border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
-        {/* Password */}
         <input
           type="password"
-          placeholder="🔑 Password"
+          placeholder="?? Password"
           className="w-full mb-6 px-4 py-3 bg-gray-900/70 text-white border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
 
-        {/* Button */}
         <button className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:opacity-90 transition-all duration-300">
-          Register 🚀
+          Register ??
         </button>
 
-        {/* Message */}
         {msg && (
           <p
             className={`mt-4 text-center font-medium ${
@@ -75,12 +68,15 @@ export default function Register() {
           </p>
         )}
 
-        {/* Footer link */}
         <p className="mt-6 text-gray-400 text-sm text-center">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-400 hover:underline">
+          <button
+            type="button"
+            onClick={() => setActivePage("login")}
+            className="text-blue-400 hover:underline bg-transparent border-none cursor-pointer p-0"
+          >
             Login here
-          </a>
+          </button>
         </p>
       </form>
     </div>

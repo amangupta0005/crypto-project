@@ -2,18 +2,17 @@
 import { useState } from "react";
 import API from "../../Api";
 
-export default function Login() {
+export default function Login({ setActivePage }) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [msg, setMsg] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Submitting login form:", form);
       const res = await API.post("/auth/login", form);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
-      window.location.href = "/"; // Redirect
+      window.location.reload();
     } catch (err) {
       console.error("Login error:", err);
       setMsg(err.response?.data?.msg || err.response?.data?.message || "Error occurred");
@@ -24,7 +23,7 @@ export default function Login() {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4">
       <div className="bg-white/10 backdrop-blur-lg shadow-2xl rounded-2xl p-8 w-full max-w-md border border-white/20">
         <h2 className="text-3xl font-bold text-center text-white mb-6 tracking-wide">
-          Welcome Back 👋
+          Welcome Back ??
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
@@ -60,13 +59,13 @@ export default function Login() {
           )}
         </form>
         <p className="mt-6 text-gray-300 text-center text-sm">
-          Don’t have an account?{" "}
-          <a
-            href="/register"
-            className="text-blue-400 hover:underline hover:text-blue-300"
+          Don't have an account?{" "}
+          <button
+            onClick={() => setActivePage("register")}
+            className="text-blue-400 hover:underline hover:text-blue-300 bg-transparent border-none cursor-pointer p-0"
           >
             Sign up
-          </a>
+          </button>
         </p>
       </div>
     </div>
